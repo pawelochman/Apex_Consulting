@@ -1,6 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 from .database import Base, engine
 from .models import User
@@ -10,6 +14,8 @@ from .deps import get_db, get_current_user
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Secure PDF Chatbot")
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 @app.post("/auth/register")
 def register(email: str, password: str, full_name: str | None = None, db: Session = Depends(get_db)):
