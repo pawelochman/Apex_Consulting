@@ -1,0 +1,17 @@
+pdf-chatbot/
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── auth.py
+│   ├── deps.py
+│   ├── database.py
+│   ├── models.py
+│   ├── pdf.py          # PDF parsing + storage
+│   ├── embeddings.py   # Gemini embeddings + vector DB
+│   ├── chat.py         # Chatbot endpoint
+│   └── utils.py        # shared helpers
+│
+├── requirements.txt
+├── .env                # DO NOT COMMIT
+└── README.md
