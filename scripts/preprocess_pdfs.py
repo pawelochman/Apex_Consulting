@@ -6,11 +6,14 @@ import pickle
 from openai import OpenAI
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-PDF_FOLDER = "pdfs"  # put your PDFs here
-OUTPUT_FILE = "pdf_library.pkl"
+# Paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PDF_FOLDER = os.path.join(BASE_DIR, "pdfs")          # Your PDF library folder
+OUTPUT_FILE = os.path.join(BASE_DIR, "pdf_library.pkl")  # Saved embeddings/indexes
 
 
 def extract_pdf_text(path):
@@ -50,36 +53,44 @@ def embed_text(text):
 
 
 def process_pdf_library():
+    """Walk through all PDFs (including subfolders), embed them, and save FAISS indexes."""
     pdf_library = {}
 
-    for file in os.listdir(PDF_FOLDER):
-        if not file.endswith(".pdf"):
-            continue
+    for root, dirs, files in os.walk(PDF_FOLDER):
+        for file in files:
+            if not file.endswith(".pdf"):
+                continue
 
-        print(f"Processing: {file}")
+            full_path = os.path.join(root, file)
+            print(f"Processing: {full_path}")
 
-        # Extract make/model from filename
-        name = file.replace(".pdf", "")  # e.g., Samsung_AR18CSFCMWKNCV
-        make, model = name.split("_", 1)
+            # Folder name becomes "make"
+            make = os.path.basename(root)
 
-        path = os.path.join(PDF_FOLDER, file)
-        text = extract_pdf_text(path)
-        chunks = chunk_text(text)
+            # File name (without .pdf) becomes "model"
+            model = file.replace(".pdf", "")
 
-        # Embed all chunks
-        embeddings = np.array([embed_text(c) for c in chunks])
+            # Extract text
+            text = extract_pdf_text(full_path)
 
-        # Build FAISS index
-        dim = embeddings.shape[1]
-        index = faiss.IndexFlatL2(dim)
-        index.add(embeddings)
+            # Chunk text
+            chunks = chunk_text(text)
 
-        pdf_library[f"{make}_{model}"] = {
-            "index": index,
-            "chunks": chunks
-        }
+            # Embed chunks
+            embeddings = np.array([embed_text(c) for c in chunks])
 
-    # Save library
+            # Build FAISS index
+            dim = embeddings.shape[1]
+            index = faiss.IndexFlatL2(dim)
+            index.add(embeddings)
+
+            # Store in library
+            pdf_library[f"{make}_{model}"] = {
+                "index": index,
+                "chunks": chunks
+            }
+
+    # Save library to disk
     with open(OUTPUT_FILE, "wb") as f:
         pickle.dump(pdf_library, f)
 
