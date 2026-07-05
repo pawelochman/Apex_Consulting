@@ -3,12 +3,12 @@ import fitz  # PyMuPDF
 import numpy as np
 import faiss
 import pickle
-from openai import OpenAI
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -44,12 +44,10 @@ def chunk_text(text, chunk_size=800):
 
 
 def embed_text(text):
-    """Generate OpenAI embeddings."""
-    response = client.embeddings.create(
-        model="text-embedding-3-large",
-        input=text
-    )
-    return np.array(response.data[0].embedding)
+    """Generate Gemini embeddings."""
+    model = genai.GenerativeModel("embedding-001")
+    result = model.embed_content(text)
+    return np.array(result["embedding"], dtype=np.float32)
 
 
 def process_pdf_library():
