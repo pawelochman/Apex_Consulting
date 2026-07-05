@@ -1,17 +1,15 @@
-pdf-chatbot/
+Apex_Consulting/
 │
 ├── app/
 │   ├── __init__.py
 │   ├── main.py
-│   ├── auth.py
+│   ├── gemini.py
+│   ├── pdf.py
+│   ├── image.py
 │   ├── deps.py
-│   ├── database.py
+│   ├── auth.py
 │   ├── models.py
-│   ├── pdf.py          # PDF parsing + storage
-│   ├── embeddings.py   # Gemini embeddings + vector DB
-│   ├── chat.py         # Chatbot endpoint
-│   └── utils.py        # shared helpers
-│
+│   └── database.py
+├── .env
 ├── requirements.txt
-├── .env                # DO NOT COMMIT
-└── README.md
+└── .venv/
