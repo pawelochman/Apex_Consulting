@@ -1,11 +1,11 @@
 import os
+import google.genai as genai
 from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import google.genai as genai
 
 # Load environment variables
 load_dotenv()
