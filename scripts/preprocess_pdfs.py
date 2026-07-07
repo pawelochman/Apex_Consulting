@@ -6,12 +6,12 @@ import pickle
 from dotenv import load_dotenv
 
 # Correct Gemini SDK
-from google.ai.generativelanguage import GenerativeLanguageClient
+from google.ai.generativelanguage import GenerativeServiceClient
 from google.ai.generativelanguage import EmbedContentRequest
 
 # Load environment variables
 load_dotenv()
-client = GenerativeLanguageClient(api_key=os.getenv("GEMINI_API_KEY"))
+client = GenerativeServiceClient(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
