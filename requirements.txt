@@ -8,3 +8,4 @@ pydantic[email]
 pdfplumber
 google-generativeai
 faiss-cpu
+google-genai
