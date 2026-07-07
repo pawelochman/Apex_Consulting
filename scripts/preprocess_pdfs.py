@@ -5,12 +5,14 @@ import faiss
 import pickle
 from dotenv import load_dotenv
 
-# NEW Gemini SDK (correct one)
+# Correct Gemini API Studio SDK
 import google.genai as genai
 
 # Load environment variables
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Create Gemini client
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -44,11 +46,11 @@ def chunk_text(text, chunk_size=800):
 
 
 def embed_text(text):
-    result = genai.embed_content(
+    result = client.embed_content(
         model="models/embedding-001",
         content=text
     )
-    return np.array(result["embedding"], dtype=np.float32)
+    return np.array(result.embedding, dtype=np.float32)
 
 
 def process_pdf_library():
