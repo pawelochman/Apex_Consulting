@@ -5,13 +5,13 @@ import faiss
 import pickle
 from dotenv import load_dotenv
 
-# NEW Gemini SDK
-import google.genai as genai
-from google.genai.types import EmbedContentRequest
+# Correct Gemini SDK
+from google.ai.generativelanguage import GenerativeLanguageClient
+from google.ai.generativelanguage import EmbedContentRequest
 
 # Load environment variables
 load_dotenv()
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+client = GenerativeLanguageClient(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +20,6 @@ OUTPUT_FILE = os.path.join(BASE_DIR, "pdf_library.pkl")
 
 
 def extract_pdf_text(path):
-    """Extract text from a PDF file."""
     doc = fitz.open(path)
     text = ""
     for page in doc:
@@ -29,7 +28,6 @@ def extract_pdf_text(path):
 
 
 def chunk_text(text, chunk_size=800):
-    """Split text into chunks for embedding."""
     words = text.split()
     chunks = []
     current = []
@@ -47,17 +45,15 @@ def chunk_text(text, chunk_size=800):
 
 
 def embed_text(text):
-    """Generate Gemini embeddings using the new google.genai SDK."""
     request = EmbedContentRequest(
         model="models/embedding-001",
         content=text
     )
-    result = genai.embed_content(request)
+    result = client.embed_content(request)
     return np.array(result.embedding, dtype=np.float32)
 
 
 def process_pdf_library():
-    """Walk through all PDFs (including subfolders), embed them, and save FAISS indexes."""
     pdf_library = {}
 
     for root, dirs, files in os.walk(PDF_FOLDER):
