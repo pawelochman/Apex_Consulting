@@ -5,8 +5,8 @@ import faiss
 import pickle
 from dotenv import load_dotenv
 
-# Correct Gemini API Studio SDK
-import google.generativeai as genai
+# NEW Gemini SDK (correct one)
+import google.genai as genai
 
 # Load environment variables
 load_dotenv()
