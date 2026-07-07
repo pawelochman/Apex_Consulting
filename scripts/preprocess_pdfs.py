@@ -11,7 +11,9 @@ from google.ai.generativelanguage import EmbedContentRequest
 
 # Load environment variables
 load_dotenv()
-client = GenerativeServiceClient(api_key=os.getenv("GEMINI_API_KEY"))
+
+# IMPORTANT: Gemini client does NOT take an API key in the constructor
+client = GenerativeServiceClient()
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,7 +49,8 @@ def chunk_text(text, chunk_size=800):
 def embed_text(text):
     request = EmbedContentRequest(
         model="models/embedding-001",
-        content=text
+        content=text,
+        api_key=os.getenv("GEMINI_API_KEY")  # API key goes HERE
     )
     result = client.embed_content(request)
     return np.array(result.embedding, dtype=np.float32)
