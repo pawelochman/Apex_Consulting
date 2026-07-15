@@ -14,3 +14,11 @@ class Question(BaseModel):
 @app.get("/")
 def root():
     return {"status": "ok", "service": "Apex Consulting HVAC Q&A"}
+
+@app.post("/hvac")
+def hvac_answer(payload: Question):
+    response = client.models.generate_content(
+        model="gemini-1.5-flash",
+        contents=f"Answer this HVAC question: {payload.question}"
+    )
+    return {"answer": response.text}
