@@ -1,10 +1,22 @@
 @app.post("/hvac")
 def hvac_answer(payload: Question):
-    response = client.models.generate_content(
+    response = _client.models.generate_content(
         model="gemini-1.5-flash",
         contents=f"Answer this HVAC question: {payload.question}"
     )
 
-    # Extract Gemini text correctly
-    answer = response.candidates[0].content.parts[0].text
+    # Defensive checks
+    if not response.candidates:
+        return {"answer": "Model returned no candidates."}
+
+    parts = response.candidates[0].content.parts
+    if not parts:
+        return {"answer": "Model returned empty content."}
+
+    # Extract text safely
+    answer = "".join([p.text for p in parts if hasattr(p, "text")])
+
+    if not answer:
+        return {"answer": "Model returned no text content."}
+
     return {"answer": answer}
