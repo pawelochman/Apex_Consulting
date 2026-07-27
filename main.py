@@ -1,9 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from google.genai import Client
+from google.genai.errors import ClientError
 import os
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+if not GOOGLE_API_KEY:
+    raise RuntimeError("GOOGLE_API_KEY environment variable is required")
+
 client = Client(api_key=GOOGLE_API_KEY)
 
 app = FastAPI()
@@ -17,10 +21,15 @@ def root():
 
 @app.post("/hvac")
 def hvac_answer(payload: Question):
-    response = client.models.generate_content(
-        model="gemini-1.5-flash",
-        contents=f"Answer this HVAC question: {payload.question}"
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=f"Answer this HVAC question: {payload.question}"
+        )
+    except ClientError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail="Internal service error") from exc
 
     if not response.candidates:
         return {"answer": "Model returned no candidates."}
