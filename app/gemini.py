@@ -16,3 +16,14 @@ if "GEMINI_API_KEY" in os.environ:
 client = genai.Client(api_key=GOOGLE_API_KEY)
 model = client.models
 
+DEFAULT_MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.0-flash")
+
+
+def generate_content(prompt: str, model: str | None = None):
+    selected_model = model or DEFAULT_MODEL
+    response = client.models.generate_content(
+        model=selected_model,
+        contents=prompt,
+    )
+    return response.text
+
