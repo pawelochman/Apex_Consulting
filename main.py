@@ -21,4 +21,11 @@ def hvac_answer(payload: Question):
         model="gemini-1.5-flash",
         contents=f"Answer this HVAC question: {payload.question}"
     )
-    return {"answer": response.text}
+
+    if not response.candidates:
+        return {"answer": "Model returned no candidates."}
+
+    parts = response.candidates[0].content.parts
+    answer = "".join(getattr(p, "text", "") for p in parts)
+
+    return {"answer": answer or "Model returned no text content."}
