@@ -1,14 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from google.genai import Client
 from google.genai.errors import ClientError
-import os
-
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-if not GOOGLE_API_KEY:
-    raise RuntimeError("GOOGLE_API_KEY environment variable is required")
-
-client = Client(api_key=GOOGLE_API_KEY)
+from app.gemini import model
 
 app = FastAPI()
 
@@ -22,7 +15,7 @@ def root():
 @app.post("/hvac")
 def hvac_answer(payload: Question):
     try:
-        response = client.models.generate_content(
+        response = model.generate_content(
             model="gemini-1.5-flash",
             contents=f"Answer this HVAC question: {payload.question}"
         )
