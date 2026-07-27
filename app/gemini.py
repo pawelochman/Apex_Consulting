@@ -17,13 +17,34 @@ client = genai.Client(api_key=GOOGLE_API_KEY)
 model = client.models
 
 DEFAULT_MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.0-flash")
+FALLBACK_MODELS = [
+    os.getenv("GOOGLE_FALLBACK_MODEL_1", "gemini-1.5-flash"),
+    os.getenv("GOOGLE_FALLBACK_MODEL_2", "gemini-1.5-pro"),
+]
 
 
 def generate_content(prompt: str, model: str | None = None):
-    selected_model = model or DEFAULT_MODEL
-    response = client.models.generate_content(
-        model=selected_model,
-        contents=prompt,
-    )
-    return response.text
+    candidate_models = []
+    if model:
+        candidate_models.append(model)
+    else:
+        candidate_models.append(DEFAULT_MODEL)
+
+    for fallback_model in FALLBACK_MODELS:
+        if fallback_model not in candidate_models:
+            candidate_models.append(fallback_model)
+
+    last_error = None
+    for selected_model in candidate_models:
+        try:
+            response = client.models.generate_content(
+                model=selected_model,
+                contents=prompt,
+            )
+            return response.text
+        except Exception as exc:
+            last_error = exc
+            print(f"Model {selected_model} failed: {type(exc).__name__}: {exc}")
+
+    raise RuntimeError(f"All Gemini models failed. Last error: {last_error}")
 
