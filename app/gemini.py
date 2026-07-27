@@ -9,7 +9,6 @@ GOOGLE_API_KEY = os.getenv(API_KEY_ENV_VAR)
 if not GOOGLE_API_KEY:
     raise RuntimeError(f"{API_KEY_ENV_VAR} environment variable is required")
 
-genai.configure(api_key=GOOGLE_API_KEY)
-client = genai.Client()
+client = genai.Client(api_key=GOOGLE_API_KEY)
 model = client.models
 
