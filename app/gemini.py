@@ -16,10 +16,10 @@ if "GEMINI_API_KEY" in os.environ:
 client = genai.Client(api_key=GOOGLE_API_KEY)
 model = client.models
 
-DEFAULT_MODEL = os.getenv("GOOGLE_MODEL", "gemini-2.0-flash")
+DEFAULT_MODEL = os.getenv("GOOGLE_MODEL", "gemini-flash-lite-latest")
 FALLBACK_MODELS = [
-    os.getenv("GOOGLE_FALLBACK_MODEL_1", "gemini-1.5-flash"),
-    os.getenv("GOOGLE_FALLBACK_MODEL_2", "gemini-1.5-pro"),
+    os.getenv("GOOGLE_FALLBACK_MODEL_1", "gemini-3.1-flash-lite"),
+    os.getenv("GOOGLE_FALLBACK_MODEL_2", "gemini-2.0-flash"),
 ]
 
 
